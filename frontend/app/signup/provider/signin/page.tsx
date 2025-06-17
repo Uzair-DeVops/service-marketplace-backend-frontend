@@ -1,60 +1,65 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Mail, Lock, Eye, EyeOff } from "lucide-react"
-import { useRouter } from "next/navigation"
+import { useState } from "react";
+import { Mail, Lock, Eye, EyeOff } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export default function ProviderSignin() {
-  const router = useRouter()
-  const [showPassword, setShowPassword] = useState(false)
+  const router = useRouter();
+  const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     username: "",
     password: "",
-  })
-  const [error, setError] = useState("")
-  const [loading, setLoading] = useState(false)
+  });
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleSignin = async () => {
     try {
-      setLoading(true)
-      setError("")
+      setLoading(true);
+      setError("");
 
-      const params = new URLSearchParams()
-      params.append('grant_type', '')
-      params.append('username', formData.username)
-      params.append('password', formData.password)
-      params.append('scope', '')
-      params.append('client_id', '')
-      params.append('client_secret', '')
+      const params = new URLSearchParams();
+      params.append("grant_type", "");
+      params.append("username", formData.username);
+      params.append("password", formData.password);
+      params.append("scope", "");
+      params.append("client_id", "");
+      params.append("client_secret", "");
 
-      const response = await fetch("http://127.0.0.1:8000/api/providers/login", {
-        method: "POST",
-        headers: {
-          "accept": "application/json",
-          "Content-Type": "application/x-www-form-urlencoded"
-        },
-        body: params.toString()
-      })
+      const response = await fetch(
+        "http://127.0.0.1:8000/api/providers/login",
+        {
+          method: "POST",
+          headers: {
+            accept: "application/json",
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+          body: params.toString(),
+        }
+      );
 
-      const data = await response.json()
+      const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.detail || "Login failed")
+        throw new Error(data.detail || "Login failed");
       }
 
-      localStorage.setItem('accessToken', data.access_token)
-      localStorage.setItem('providerId', data.provider_id)
-      router.push("/provider/dashboard")
+      localStorage.setItem("accessToken", data.access_token);
+      localStorage.setItem("providerId", data.provider_id);
+      router.push("/provider/dashboard");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Invalid email or password")
+      setError(
+        err instanceof Error ? err.message : "Invalid email or password"
+      );
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleInputChange = (field: string, value: string) => {
-    setFormData((prev) => ({ ...prev, [field]: value }))
-  }
+    setFormData((prev) => ({ ...prev, [field]: value }));
+  };
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-green-50">
@@ -63,8 +68,12 @@ export default function ProviderSignin() {
         <div className="w-20 h-20 bg-green-500 rounded-2xl flex items-center justify-center mb-4 shadow-lg">
           <Mail className="w-10 h-10 text-white" />
         </div>
-        <h2 className="text-3xl font-bold text-gray-900 mb-2 text-center">Sign In to Your Account</h2>
-        <p className="text-gray-600 text-center text-lg">Access your service marketplace account</p>
+        <h2 className="text-3xl font-bold text-gray-900 mb-2 text-center">
+          Sign In to Your Account
+        </h2>
+        <p className="text-gray-600 text-center text-lg">
+          Access your service marketplace account
+        </p>
       </div>
       {/* Card */}
       <div className="w-full max-w-md mx-auto bg-white rounded-2xl shadow-2xl p-8">
@@ -78,7 +87,9 @@ export default function ProviderSignin() {
         <div className="space-y-4">
           {/* Email */}
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">Email Address</label>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Email Address
+            </label>
             <div className="relative">
               <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
               <input
@@ -92,7 +103,9 @@ export default function ProviderSignin() {
           </div>
           {/* Password */}
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">Password</label>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Password
+            </label>
             <div className="relative">
               <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
               <input
@@ -117,7 +130,12 @@ export default function ProviderSignin() {
           </div>
           {/* Forgot Password */}
           <div className="flex justify-end">
-            <a href="#" className="text-green-600 hover:underline text-sm font-medium">Forgot Password?</a>
+            <a
+              href="#"
+              className="text-green-600 hover:underline text-sm font-medium"
+            >
+              Forgot Password?
+            </a>
           </div>
           {/* Sign in button */}
           <button
@@ -131,9 +149,14 @@ export default function ProviderSignin() {
         {/* Sign up link */}
         <p className="mt-6 text-center text-gray-600">
           Don't have an account?{" "}
-          <a href="/signup/provider" className="text-green-600 font-semibold hover:underline">Sign Up</a>
+          <a
+            href="/signup/provider"
+            className="text-green-600 font-semibold hover:underline"
+          >
+            Sign Up
+          </a>
         </p>
       </div>
     </div>
-  )
-} 
+  );
+}

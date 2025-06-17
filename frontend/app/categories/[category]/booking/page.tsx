@@ -89,7 +89,6 @@ export default function BookingPage() {
       const response = await fetch("http://127.0.0.1:8000/api/me/bookings", {
         method: "POST",
         body: bookingFormData,
-        credentials: "include", // This ensures cookies are sent
       });
 
       if (response.status === 401) {
