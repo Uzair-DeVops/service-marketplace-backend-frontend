@@ -4,7 +4,7 @@ from ..providers.models import ProviderInDB
 from ..providers.service import get_provider
 from .service import BookingService
 from .models import Booking, BookingCreate, BookingResponse
-from database import execute_query_one
+from database import execute_query_one, execute_query
 import os
 from dotenv import load_dotenv
 
@@ -133,4 +133,59 @@ async def update_booking_status(
         print(f"  {key}: {value}")
     
     print("[DEBUG] ====== UPDATE BOOKING STATUS REQUEST COMPLETED ======\n")
-    return updated_booking 
+    return updated_booking
+
+@router.get("/all", response_model=List[BookingResponse])
+async def get_all_bookings():
+    """
+    Get all bookings with detailed information including provider and user details.
+    """
+    print("\n[DEBUG] ====== GET ALL BOOKINGS REQUEST RECEIVED ======")
+    booking_service = BookingService()
+    
+    # Get all bookings from the database
+    bookings = execute_query(
+        """
+        SELECT b.*, 
+               u.email as user_email,
+               p.email as provider_email,
+               p.business_name as provider_name
+        FROM bookings b
+        JOIN users u ON b.customer_id = u.id
+        JOIN providers p ON b.provider_id = p.id
+        ORDER BY b.created_at DESC
+        """
+    )
+    
+    print(f"\n[DEBUG] Found {len(bookings)} bookings")
+    
+    # Process the bookings to match the response model
+    response_bookings = []
+    for booking in bookings:
+        # Map database column names to our model field names
+        booking_data = {
+            'id': booking['id'],
+            'user_id': booking['customer_id'],
+            'provider_id': booking['provider_id'],
+            'date': booking['service_date'],
+            'time': booking['service_time'],
+            'location': booking['location'],
+            'description': booking['notes'],
+            'status': booking['status'],
+            'created_at': booking['created_at'],
+            'updated_at': booking['updated_at'],
+            'provider_name': booking['provider_name'],
+            'provider_email': booking['provider_email'],
+            'user_email': booking['user_email'],
+            'images': []  # Add empty images list since it's not in DB
+        }
+        
+        response_booking = BookingResponse(**booking_data)
+        response_bookings.append(response_booking)
+        
+        print("\n[DEBUG] Booking details:")
+        for key, value in booking_data.items():
+            print(f"  {key}: {value}")
+    
+    print("[DEBUG] ====== GET ALL BOOKINGS REQUEST COMPLETED ======\n")
+    return response_bookings 

@@ -55,7 +55,6 @@ def init_db():
             """)
             
             # Drop existing bookings table if it exists
-            cur.execute("DROP TABLE IF EXISTS bookings")
             
             # Create bookings table with new schema
             cur.execute("""
